@@ -9,7 +9,8 @@ lazy val root = (project in file("."))
   .settings(
     name := "using-headless-browser-test",
     libraryDependencies += scalaTest % Test,
-    libraryDependencies += "com.machinepublishers" % "jbrowserdriver" % "1.1.0-RC1"
+    libraryDependencies += "com.machinepublishers" % "jbrowserdriver" % "1.1.0-RC1",
+    libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
   )
 
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.
