@@ -12,6 +12,7 @@ object Main extends App {
 
   implicit val settings: Settings = Settings.builder()
     .timezone(Timezone.ASIA_TOKYO)
+    .loggerLevel(java.util.logging.Level.WARNING)
     .build()
 
   print("> ")
@@ -29,5 +30,7 @@ object Main extends App {
 
     wp.quit()
   }
+
+  readLine
   
 }
