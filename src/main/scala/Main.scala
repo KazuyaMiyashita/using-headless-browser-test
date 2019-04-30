@@ -4,37 +4,30 @@ import com.machinepublishers.jbrowserdriver.Timezone
 import com.machinepublishers.jbrowserdriver.JBrowserDriver
 import com.machinepublishers.jbrowserdriver.Settings
 
-
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import jbrowserutil._
 
 object Main extends App {
-  // You can optionally pass a Settings object here,
-  // constructed using Settings.Builder
-  val driver: JBrowserDriver = new JBrowserDriver(Settings.builder()
-    .timezone(Timezone.ASIA_TOKYO).build())
+
+  implicit val settings: Settings = Settings.builder()
+    .timezone(Timezone.ASIA_TOKYO)
+    .build()
 
   print("> ")
   val url = readLine
 
-  // This will block for the page load and any
-  // associated AJAX requests
-  driver.get(url)
+  val result: Future[WrappedPageResult] = WrappedPageResult.fromUrl(url)
+  result.onSuccess { case wp =>
+    println(wp.url)
+    println(wp.statusCode)
+    println(wp.title)
+    println(wp.pageSource)
 
-  // You can get status code unlike other Selenium drivers.
-  // It blocks for AJAX requests and page loads after clicks 
-  // and keyboard events.
-  System.out.println(driver.getStatusCode())
+    val imgsrcs: List[String] = wp.findElementsByXPath("//img").map(_.getAttribute("src"))
+    imgsrcs foreach println
 
-  // Returns the page source in its current state, including
-  // any DOM updates that occurred after page load
-  System.out.println(driver.getPageSource())
-
-  val imgsrcs: List[String] = {
-    import collection.JavaConverters._
-    driver.findElementsByXPath("//img").asScala.map(_.getAttribute("src")).toList
+    wp.quit()
   }
-
-  imgsrcs foreach println
   
-  // Close the browser. Allows this thread to terminate.
-  driver.quit()
 }
