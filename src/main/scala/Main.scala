@@ -1,8 +1,9 @@
 import com.machinepublishers.jbrowserdriver.Timezone
 import com.machinepublishers.jbrowserdriver.Settings
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+// import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration._
 import scala.util.{Success, Failure}
 import scala.io.StdIn.readLine
 
@@ -14,23 +15,32 @@ object Main extends App {
     .timezone(Timezone.ASIA_TOKYO)
     .build()
 
-  print("> ")
-  val url = readLine
-
-  val result: Future[WrappedPageResult] = WrappedPageResult.fromUrl(url)
-  result.onComplete {
-    case Success(wp) => {
-      println(wp.url)
-      println(wp.statusCode)
-      println(wp.title)
-      println(wp.pageSource)
-      
-      val imgsrcs: List[String] = wp.findElementsByXPath("//img").map(_.getAttribute("src"))
-      imgsrcs foreach println
-      
-      wp.quit()
+  def loop(): Unit = {
+    print("> ")
+    readLine match {
+      case x if x == null || x == "" => println("Bye!")
+      case url => {
+        val result: Future[WrappedPageResult] = WrappedPageResult.fromUrl(url)
+        Await.ready(result, Duration.Inf)
+        result.value.get match {
+          case Success(wp) => {
+            println("url: %s".format(wp.url))
+            println("statusCode: %s".format(wp.statusCode))
+            println("title: %s".format(wp.title))
+            // println(wp.pageSource)
+            
+            val imgsrcs: List[String] = wp.findElementsByXPath("//img").map(_.getAttribute("src"))
+            imgsrcs foreach println
+            
+            wp.quit()
+          }
+          case Failure(f) => println(f)
+        }
+        loop()
+      }
     }
-    case Failure(f) => println(f)
   }
+
+  loop()
   
 }
