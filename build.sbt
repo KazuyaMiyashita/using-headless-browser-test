@@ -5,7 +5,8 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
-Compile / run / fork := true
+run / fork := true
+connectInput := true // cf. https://kazuhira-r.hatenablog.com/entry/20130425/1366898136
 run / javaOptions ++= Seq(
   "-Dyour.logging.params=something",
   "-Danother.logging.param=somethingelse"
