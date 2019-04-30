@@ -5,6 +5,12 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
+Compile / run / fork := true
+run / javaOptions ++= Seq(
+  "-Dyour.logging.params=something",
+  "-Danother.logging.param=somethingelse"
+)
+
 lazy val root = (project in file("."))
   .settings(
     name := "using-headless-browser-test",
