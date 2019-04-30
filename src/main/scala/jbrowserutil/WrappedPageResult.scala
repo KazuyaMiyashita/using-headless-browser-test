@@ -32,8 +32,6 @@ case class WrappedPageResult(
 object WrappedPageResult {
 
   def fromUrl(url: String)(implicit settings: Settings): Future[WrappedPageResult] = Future {
-    import com.machinepublishers.jbrowserdriver.Timezone
-    import com.machinepublishers.jbrowserdriver.Settings
 
     val driver: JBrowserDriver = new JBrowserDriver(settings)
 
