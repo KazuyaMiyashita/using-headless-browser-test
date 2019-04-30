@@ -10,6 +10,7 @@ run / javaOptions ++= Seq(
   "-Dyour.logging.params=something",
   "-Danother.logging.param=somethingelse"
 )
+scalacOptions ++= "-deprecation" :: "-feature" :: "-Xlint" :: "-Ywarn-unused" :: Nil
 
 lazy val root = (project in file("."))
   .settings(

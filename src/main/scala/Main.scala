@@ -1,11 +1,12 @@
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebElement
 import com.machinepublishers.jbrowserdriver.Timezone
-import com.machinepublishers.jbrowserdriver.JBrowserDriver
 import com.machinepublishers.jbrowserdriver.Settings
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+// import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration._
+import scala.util.{Success, Failure}
+import scala.io.StdIn.readLine
+
 import jbrowserutil._
 
 object Main extends App {
@@ -15,22 +16,32 @@ object Main extends App {
     .loggerLevel(java.util.logging.Level.WARNING)
     .build()
 
-  print("> ")
-  val url = readLine
-
-  val result: Future[WrappedPageResult] = WrappedPageResult.fromUrl(url)
-  result.onSuccess { case wp =>
-    println(wp.url)
-    println(wp.statusCode)
-    println(wp.title)
-    println(wp.pageSource)
-
-    val imgsrcs: List[String] = wp.findElementsByXPath("//img").map(_.getAttribute("src"))
-    imgsrcs foreach println
-
-    wp.quit()
+  def loop(): Unit = {
+    print("> ")
+    readLine match {
+      case x if x == null || x == "" => println("Bye!")
+      case url => {
+        val result: Future[WrappedPageResult] = WrappedPageResult.fromUrl(url)
+        Await.ready(result, Duration.Inf)
+        result.value.get match {
+          case Success(wp) => {
+            println("url: %s".format(wp.url))
+            println("statusCode: %s".format(wp.statusCode))
+            println("title: %s".format(wp.title))
+            // println(wp.pageSource)
+            
+            val imgsrcs: List[String] = wp.findElementsByXPath("//img").map(_.getAttribute("src"))
+            imgsrcs foreach println
+            
+            wp.quit()
+          }
+          case Failure(f) => println(f)
+        }
+        loop()
+      }
+    }
   }
 
-  readLine
+  loop()
   
 }
