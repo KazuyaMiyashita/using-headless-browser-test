@@ -1,0 +1,5 @@
+# using-headless-browser-test
+jBrowserDriverというヘッドレスブラウザを使ったクローラーのテスト
+
+内部でSeleniumを利用している。JavaFXが必要。Oracle JDKにはJavaFXが含まれているので利用できるが、
+その他の環境だと環境構築が難しいかもしれない。
